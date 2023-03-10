@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, Stack, Text } from "@chakra-ui/react";
+import { Button, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react";
 
 
 const Timer = () => {
@@ -26,6 +26,30 @@ const Timer = () => {
         clearInterval(intervals.current);
     }
 
+    const saveTask = () => {
+        setTasks((prevTasks) => [...prevTasks, {title, time}]);
+        setModalOpen(false);
+        setTitle('');
+        setDescription('');
+        setTimeOn(false);
+        setTimerStage("stopped");
+        setTime(0);
+    }
+
+    const handleTitleChange = (e) => {
+        setTitle(e.target.value);
+    }
+
+    const handleDescriptionChange = (e) => {
+        setDescription(e.target.value);
+    }
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setTitle('');
+        setDescription('');
+    }
+    
 
   return (
     <Stack align={"center"}>
@@ -51,6 +75,31 @@ const Timer = () => {
                 </>
             )
         }
+        <Modal isOpen={modalOpen} onClose={handleModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+          <Stack spacing={4}>
+            <Input placeholder="Title" value={title} onChange={handleTitleChange} />
+            <Input placeholder="Description" value={description} onChange={handleDescriptionChange} />
+          </Stack>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button onClick={saveTask}>Save</Button>
+            <Button onClick={handleModalClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Stack spacing={4}>
+        {tasks.map((task, index) => (
+          <Text key={index}>
+            {task.title} - {new Date(task.time * 1000).toISOString().substr(11, 8)}
+          </Text>
+        ))}
+      </Stack>
     </Stack>
   )
 }
